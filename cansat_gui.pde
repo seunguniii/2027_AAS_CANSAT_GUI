@@ -3,7 +3,7 @@ import processing.serial.*;
 Serial port;
 
 void setup() {
-  port = new Serial(this, "/dev/ttyACM1", 115200);
+  port = new Serial(this, "/dev/ttyACM0", 115200);
 }
 
 void draw() {
