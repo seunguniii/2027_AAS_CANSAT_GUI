@@ -1,8 +1,10 @@
 //VARIABLES
-ArrayList<Integer> buffer = new ArrayList<Integer>();  
-int frame_size;
-int frame_count = 0;
+static ArrayList<Integer> buffer = new ArrayList<Integer>();  
+static int frame_size;
+static int frame_count = 0;
 int first_packet_id;
+
+static int data_buffer = 1000;
 
 //FUNCTIONS
 
