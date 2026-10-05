@@ -41,14 +41,12 @@ static class Frame{
   
   static Frame parseFrame(ArrayList<Integer> buffer){
     Frame frame = new Frame();
-    while(buffer.size() >= 3){ //sync bits + type bit
+    while(buffer.size() >= 3){ //sync bytes + type byte
       if(buffer.get(0) != SYNC_0 || buffer.get(1) != SYNC_1){ 
         buffer.remove(0);
         continue;
       }
-      frame_count++;
       println("\n\nFRAME RECEIVED");
-      println("Frame Count: " + frame_count + "\n");
       println("Full Frame: \n" + buffer);
     
       frame.type = Frame.Type.fromValue(buffer.get(2));
@@ -92,16 +90,13 @@ static class Frame{
     header.rxMCU = MCU.Type.fromValue(packet[5]);
     header.rxNode = Node.Type.fromValue(packet[6]);
     
-    //println(readUInt16LE(packet, 7));
     header.msgType = Msg.Type.fromValue(readUInt16LE(packet, 7));
     header.msgLength = readUInt16LE(packet, 9);
-    
-    //this.header = header;
   }
   
   void parseCRC(int[] packet){
     int offset = packet.length - CRC_SIZE;
-    this.crc = readUInt16LE(packet, offset);
+    crc = readUInt16LE(packet, offset);
   }
   
   void parsePayload(int[] packet){
@@ -117,11 +112,19 @@ static class Frame{
     
     switch(type){
       case CTR_TELEMETRY:
+        count_gs_telem_ctr++;
+        time_last_telem_ctr_ctr = time_curr_telem_ctr_ctr;
         ctrTelemetry = Telemetry.CTR.parseTelemetry(payload);
+        time_curr_telem_ctr_ctr = ctrTelemetry.missionTime;
+        time_telem_ctr_gs = current_time;
         break;
         
       case PQ_TELEMETRY:
+        count_gs_telem_pq++;
+        time_last_telem_pq_pq = time_curr_telem_pq_pq;
         pqTelemetry = Telemetry.PQ.parseTelemetry(payload);
+        time_curr_telem_pq_pq = pqTelemetry.missionTime;
+        time_telem_pq_gs = current_time;
         break;
       
       //case CMD:
@@ -131,7 +134,9 @@ static class Frame{
       default:
         println("[parsePayload] Unknown frame type. Skipping frame.\n");
         break;
-    }
+    }    
+    count_gs = count_gs_telem_ctr + count_gs_telem_pq;
+    count_net_true = count_ctr_telem_ctr + count_pq_telem_pq;
   }
   void printParsedHeader(){
     println("\nHeader");

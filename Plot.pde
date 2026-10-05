@@ -29,7 +29,7 @@ class Plot{
     
     if(data_buffer > 1) graph_step = graph_width / (data_buffer - 1);
     else graph_step = 0;
-    label_size = constrain(min(width, height)*0.02, 12, 30);
+    label_size = constrain(min(width, height)*0.02, 14, 30);
   }
   
   void updateArray(float data){
@@ -40,24 +40,26 @@ class Plot{
   }
   
   void plot(String title){
+    strokeWeight(stroke_weight);
+    
     noFill();
-    stroke(255);
+    stroke(0);
     rect(graphX, graphY, graph_width, graph_height);
     
     textSize(label_size);
-    fill(255);
-    text(title, graphX, graphY - margin_top*0.1);
-    text(max, graphX, graphY + margin_top);
+    fill(0);
+    text(title, graphX, graphY - margin_top*0.2);
+    text(max, graphX, graphY + margin_top*0.6);
     text(min, graphX, graphY + graph_height - margin_bottom*0.2);
     
-    fill(0, 255, 0);
+    fill(dark_green);
     float currentY = graphY + graph_height - (data[0] - min)*graph_scale;
-    text(data[0], graphX + graph_width - width*0.05, currentY);
+    text(data[0], graphX, currentY - margin_bottom*0.2);
     
-    stroke(0, 255, 0);
-    for(int i = data_buffer - 1; i > 0; i--){
-      float x1 = graphX + graph_width - graph_step*i;
-      float x2 = graphX + graph_width - graph_step*(i - 1);
+    stroke(dark_green);
+    for(int i = 1; i < data_buffer; i++){
+      float x1 = graphX + graph_step*i;
+      float x2 = graphX + graph_step*(i-1);
       float y1 = graphY + graph_height - (data[i] - min)*graph_scale;
       float y2 = graphY + graph_height - (data[i-1] - min)*graph_scale;
       

@@ -1,12 +1,6 @@
-//VARIABLES
-static ArrayList<Integer> buffer = new ArrayList<Integer>();  
-static int frame_size;
-static int frame_count = 0;
-int first_packet_id;
+//HELPER FUNCTIONS
 
-static int data_buffer = 1000;
-
-//FUNCTIONS
+//Little endian
 
 //uint32 little endian
 static long readUInt32LE(int[] data, int offset){

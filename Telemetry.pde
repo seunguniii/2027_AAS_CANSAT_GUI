@@ -1,5 +1,4 @@
 static class Telemetry{
-  
   static class CTR{
     String ID;
     long missionTime;

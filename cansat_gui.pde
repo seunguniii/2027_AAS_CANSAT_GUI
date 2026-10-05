@@ -1,46 +1,61 @@
 import processing.serial.*;
 
-Serial port;
-PFont font;
-Plot ctrPlotPressure = new Plot();
-Plot ctrPlotTemperature = new Plot();
-Frame new_frame = new Frame();
-
 void setup() {
+  ui_mode = "STARTUP";
+  size(1920, 1000);
+  background(255);
+  
+  printArray(Serial.list()); //list all ports, choose ground station esp
+  
   port = new Serial(this, "COM4", 115200); //windows
   //port = new Serial(this, "/dev/ttyACM0", 115200); //linux
   
-  size(1920, 1000);
-  background(0);
+  //font = createFont("Consolas", 30, true);
+  //textFont(font);
   
-  font = createFont("Consolas", 30, true);
-  textFont(font);
+  ui.initPlotCTR();
+  ui.initPlotPQ();
+  ui.initButtons();
   
-  //plot setup
-  float [] margin_scale = {0.03, 0.0, 0.03, 0.03};
-  float [] graph_XY_p = {margin_scale[0]*width + 0.8*width, margin_scale[3]*height};
-  float [] graph_size = {(width - 10)*0.2, (height - 10)*0.5};
-  ctrPlotPressure.init(margin_scale, graph_XY_p, graph_size, 0, 150000);
-  
-  float [] graph_XY_C = {margin_scale[0]*width + 0.8*width, margin_scale[3]*height + 0.5*height};
-  ctrPlotTemperature.init(margin_scale, graph_XY_C, graph_size, 24, 27);
+  ui_mode = "STANDBY";
 }
 
 void draw() {
-  while (port.available() > 0) {
-    buffer.add(port.read());
-  }
+  current_time = millis();
+  //parse packet
+  while (port.available() > 0) {buffer.add(port.read());}
   
   Frame parsed_frame = Frame.parseFrame(buffer);
-  if(parsed_frame != null && parsed_frame.ctrTelemetry != null){
+  if(parsed_frame != null && parsed_frame.ctrTelemetry != null)
     new_frame = parsed_frame;
-  }
   
-  background(0);
-  if(new_frame.ctrTelemetry != null){
-    ctrPlotPressure.updateArray(new_frame.ctrTelemetry.pressure);
-    ctrPlotTemperature.updateArray(new_frame.ctrTelemetry.temperature);
-    ctrPlotPressure.plot("Pressure");
-    ctrPlotTemperature.plot("Temperature");
+      
+  //check LOS
+  LOS_ctr = (time_curr_telem_ctr_ctr - time_last_telem_ctr_ctr > LOS_threshold_ctr
+             || current_time - time_telem_ctr_gs > LOS_threshold_ctr)? true:false;
+  LOS_pq = (time_curr_telem_pq_pq - time_last_telem_pq_pq > LOS_threshold_pq
+            || current_time - time_telem_pq_gs > LOS_threshold_pq)? true:false;
+
+  //draw
+  background(255);
+  
+  ui.updateButtons();
+  ui_mode = ui.checkMode();
+  ui.updatePlotArray(new_frame);
+  switch(ui_mode){
+    case("STANDBY"):
+      //TODO
+      break;
+      
+    case("CTR"):
+      ui.drawCTRDisplay();
+      break;
+      
+    case("PQ"):
+      ui.drawPQDisplay();
+      break;
+      
+    default:
+      break;
   }
 }
