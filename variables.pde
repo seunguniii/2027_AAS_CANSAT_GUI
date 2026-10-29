@@ -10,16 +10,21 @@ static final int CRC_SIZE = 2;
 static final int PQ_TELEMETRY_FRAME_SIZE = 141;
 static final int CTR_TELEMETRY_FRAME_SIZE = 141;
 static final int CMD_FRAME_SIZE = 100; //TODO
-static final int MAX_FRAME_SIZE = 141;
 
+//port comm
+Serial port;
+String port_name;
+boolean port_chosen = false;
+boolean port_opened = false;
+
+static final int PORT_CHECK_INTERVAL = 1000;
+static int last_port_check = -1000;
 
 //frame receive/parsing
-Serial port;
 Frame new_frame = new Frame();
 
 static ArrayList<Integer> buffer = new ArrayList<Integer>();  
 static int frame_size;
-static int data_buffer = 500;
 
 //received counters
 static int count_gs_telem_ctr = 0;
@@ -50,21 +55,45 @@ static long time_curr_telem_pq_pq = 1001;
 static long time_telem_pq_gs = 0;
 static boolean LOS_pq = false;
 
+//plot
+static final int data_buffer = 1000;
 
 //ui
 UI ui = new UI();
-PFont font;
+PFont consolas;
 
 static String ui_mode = "STANDBY"; //consider enum
 
 int stroke_weight = 2;
 
-Button button_ui_mode_CTR;
-Button button_ui_mode_PQ;
+Button [] button_ports;
+boolean button_ports_initialized = false;
 
-color grey = color(125);
-color black = color(0);
-color white = color(255);
-color green = color(0, 255, 0);
-color red = color(255, 0, 0);
-color dark_green = color(0, 150, 0);
+Button button_active_mode_PORT;
+Button button_active_mode_CTR;
+Button button_ui_mode_PQ;
+Button button_RESTART;
+
+final color black = color(0);
+final color grey = color(125);
+final color light_grey = color(200, 200, 200);
+final color white = color(255);
+
+final color red = color(255, 0, 0);
+final color green = color(0, 255, 0);
+final color blue = color(0, 0, 255);
+
+final color dark_red = color(150, 0, 0);
+final color dark_green = color(0, 150, 0);
+final color dark_blue = color(0, 0, 150);
+
+final color bluish_light_grey = color(200, 200, 205);
+final color pink = color(255, 125, 125);
+
+color background_color = light_grey;
+color font_color = black;
+color button_normColor = black;
+color button_highLightColor = grey;
+color button_fontColor = white;
+color ui_color = black;
+color plot_color_0 = dark_green;

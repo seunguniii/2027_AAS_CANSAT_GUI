@@ -27,36 +27,42 @@ class Plot{
     
     graph_scale = graph_height / (max - min);
     
-    if(data_buffer > 1) graph_step = graph_width / (data_buffer - 1);
-    else graph_step = 0;
+    graph_step = graph_width / (data_buffer - 1);
     label_size = constrain(min(width, height)*0.02, 14, 30);
   }
   
   void updateArray(float data){
+    //min = data; max = data;
     for(int i = data_buffer - 1; i > 0; i--){
       this.data[i] = this.data[i-1];
+      //if(this.data[i] < min) min = this.data[i];
+      //if(this.data[i] > max) max = this.data[i];
     }
-    this.data[0] = data < min? min:data;
+    //graph_scale = graph_height / (max - min);
+    this.data[0] = data;
   }
   
   void plot(String title){
     strokeWeight(stroke_weight);
     
     noFill();
-    stroke(0);
+    stroke(ui_color);
     rect(graphX, graphY, graph_width, graph_height);
     
     textSize(label_size);
-    fill(0);
+    fill(font_color);
     text(title, graphX, graphY - margin_top*0.2);
     text(max, graphX, graphY + margin_top*0.6);
     text(min, graphX, graphY + graph_height - margin_bottom*0.2);
     
-    fill(dark_green);
-    float currentY = graphY + graph_height - (data[0] - min)*graph_scale;
+    fill(plot_color_0);
+    float plotY = data[0];
+    if (plotY < min) plotY = min;
+    else if (plotY > max) plotY = max;
+    float currentY = graphY + graph_height - (plotY - min)*graph_scale;
     text(data[0], graphX, currentY - margin_bottom*0.2);
     
-    stroke(dark_green);
+    stroke(plot_color_0);
     for(int i = 1; i < data_buffer; i++){
       float x1 = graphX + graph_step*i;
       float x2 = graphX + graph_step*(i-1);

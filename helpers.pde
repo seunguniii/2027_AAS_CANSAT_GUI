@@ -17,3 +17,34 @@ static int readUInt16LE(int[] data, int offset){
 static float readFloatLE(int[] data, int offset){
   return Float.intBitsToFloat((int)readUInt32LE(data, offset));
 }
+
+void updateSerialConnection(){
+  int now = millis();
+  
+  if(now - last_port_check < PORT_CHECK_INTERVAL) return;
+  last_port_check = now;
+  
+  boolean port_exists = false;
+  
+  if(port_name != null && !port_name.isEmpty()){
+    for(String available_port : Serial.list()){
+      if(available_port.equals(port_name)){
+        port_exists = true;
+        break;
+      }
+    }
+  }
+  
+  if(port_opened && port == null || !port_exists || !port.active()){
+    println("Serial Disconnected"); //TODO make graphic
+    
+    try{if(port != null) port.stop();}
+    catch(RuntimeException e){
+      println("Error closing port: " + e.getMessage());
+    }
+    
+    port = null;
+    port_opened = false;
+    buffer.clear();
+  }
+}
