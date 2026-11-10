@@ -5,7 +5,7 @@ class Button{
   int rectHeight;
   
   color normColor;
-  color highLightColor;
+  color highlightColor;
   //color myColor;
   
   String name;
@@ -14,13 +14,13 @@ class Button{
   boolean pressed = false;
   boolean active = true;
   
-  Button(float rectX, float rectY, float rectWidth, float rectHeight, color normColor, color highLightColor, String name, color fontColor){
+  Button(float rectX, float rectY, float rectWidth, float rectHeight, color normColor, color highlightColor, String name, color fontColor){
     this.rectX = (int)rectX;
     this.rectY = (int)rectY;
     this.rectWidth = (int)rectWidth;
     this.rectHeight = (int)rectHeight;
     this.normColor = normColor;
-    this.highLightColor = highLightColor;
+    this.highlightColor = highlightColor;
     //this.myColor = normColor;
     this.name = name;
     this.fontColor = fontColor;
@@ -39,7 +39,7 @@ class Button{
       pressed = false;
       return myColor;
     }
-    myColor = highLightColor;
+    myColor = highlightColor;
     
     if(!mousePressed) pressed = false;
     else pressed = true;
@@ -50,6 +50,7 @@ class Button{
     strokeWeight(0);
     color myColor = update();
     fill(myColor); stroke(myColor);
+    textFont(consolas);
     rect(rectX, rectY, rectWidth, rectHeight);
     
     fill(fontColor);

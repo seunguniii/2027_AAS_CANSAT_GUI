@@ -48,3 +48,13 @@ void updateSerialConnection(){
     buffer.clear();
   }
 }
+
+void printLOGO(){
+  println(LOGO0);
+  println(LOGO1);
+  println(LOGO2);
+  println(LOGO3);
+  println(LOGO4);
+  println(LOGO5);
+  println(LOGO6);
+}

@@ -192,8 +192,8 @@ static class Frame{
         println("GNSS Time = " + pqTelemetry.gnssTime);
         println("GNSS position = (" + pqTelemetry.gnssPos[0] + ", " + pqTelemetry.gnssPos[1] + ", " + pqTelemetry.gnssPos[2] + ")");
         println("GNSS # of Satellites = " + pqTelemetry.gnssSats);
-        println("SP1 Voltage = " + pqTelemetry.solar1);
-        println("SP2 Voltage = " + pqTelemetry.solar2);
+        println("SP1 Voltage = " + pqTelemetry.solar0);
+        println("SP2 Voltage = " + pqTelemetry.solar1);
     
         println("Command Echo = " + pqTelemetry.cmdEcho);
         println("Image Stabilization = " + pqTelemetry.imageStabilization);

@@ -15,6 +15,9 @@ static class Telemetry{
     float batteryVoltage;
     float batteryCurrent;
     
+    float[] rotRate = new float[3];
+    float[] accel = new float[3];
+    
     CMD.CTR cmdEcho;
     int crc;
     
@@ -71,8 +74,8 @@ static class Telemetry{
     float[] gnssPos = new float[3];
     int gnssSats;
     
+    float solar0;
     float solar1;
-    float solar2;
     
     CMD.PQ cmdEcho;
     CMD.PQ imageStabilization;
@@ -112,8 +115,8 @@ static class Telemetry{
       telemetry.gnssTime = readUInt32LE(payload, 72);
       telemetry.gnssSats = payload[88] & 0xFF;
       
-      telemetry.solar1 = readFloatLE(payload, 89);
-      telemetry.solar2 = readFloatLE(payload, 93);
+      telemetry.solar0 = readFloatLE(payload, 89);
+      telemetry.solar1 = readFloatLE(payload, 93);
       
       telemetry.cmdEcho = CMD.PQ.fromValue(payload[97] & 0xFF);
       telemetry.imageStabilization = CMD.PQ.fromValue(payload[98] & 0xFF);

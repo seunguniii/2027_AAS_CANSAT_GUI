@@ -57,10 +57,16 @@ static boolean LOS_pq = false;
 
 //plot
 static final int data_buffer = 1000;
+Renderer pqRenderer = new Renderer();
+Renderer ctrRenderer = new Renderer();
+
 
 //ui
 UI ui = new UI();
 PFont consolas;
+PFont arial;
+PFont italic;
+PFont sans_serif;
 
 static String ui_mode = "STANDBY"; //consider enum
 
@@ -71,7 +77,8 @@ boolean button_ports_initialized = false;
 
 Button button_active_mode_PORT;
 Button button_active_mode_CTR;
-Button button_ui_mode_PQ;
+Button button_active_mode_PQ;
+Button button_active_mode_CMD;
 Button button_RESTART;
 
 final color black = color(0);
@@ -89,11 +96,31 @@ final color dark_blue = color(0, 0, 150);
 
 final color bluish_light_grey = color(200, 200, 205);
 final color pink = color(255, 125, 125);
+final color magenta = color(255, 60, 220);
+final color orange = color(255, 170, 40);
+final color yellow = color(255, 230, 50);
+final color cyan = color(0, 220, 255);
+final color purple = color(210, 90, 255);
 
 color background_color = light_grey;
 color font_color = black;
 color button_normColor = black;
-color button_highLightColor = grey;
+color button_highlightColor = grey;
 color button_fontColor = white;
 color ui_color = black;
 color plot_color_0 = dark_green;
+color plot_color_1 = dark_blue;
+color plot_color_2 = dark_red;
+
+color render_top_color = cyan;
+color render_front_color = magenta;
+color render_back_color = orange;
+
+//miscellaneous
+String LOGO0 = "     ____     _____________    ______  _____   ______ _____  _______";
+String LOGO1 = "    /  _  \\  /_    __/     | /` ____/ /     \\/`      |     \\/  ____7";
+String LOGO2 = "   /  / \\  \\   7  / / ./|  |/  C___  / /`7  /  /`7  / /`7  /  /___";
+String LOGO3 = "  /  /  /  /  /  / /  L_|  |\\____  \\/  L/  /  / /  /  L/  /   ___/";
+String LOGO4 = " / ./  /  /  / ./ /  ___   |    /  /  ___ /  / /  /     _/  ./";
+String LOGO5 = "/  L__/  /__/  L_/  /   |  |---`  /  /   /  /_/  /  /\\  V   L____";
+String LOGO6 = "\\_______/L______/__/    L__|____*`\\_/    \\______^__/  \\__\\______/";

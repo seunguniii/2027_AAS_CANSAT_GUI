@@ -42,9 +42,8 @@ class Plot{
     this.data[0] = data;
   }
   
-  void plot(String title){
+  void plotFrame(String title){
     strokeWeight(stroke_weight);
-    
     noFill();
     stroke(ui_color);
     rect(graphX, graphY, graph_width, graph_height);
@@ -54,15 +53,17 @@ class Plot{
     text(title, graphX, graphY - margin_top*0.2);
     text(max, graphX, graphY + margin_top*0.6);
     text(min, graphX, graphY + graph_height - margin_bottom*0.2);
-    
-    fill(plot_color_0);
+  }
+  
+  void plot(color plot_color){
+    fill(plot_color);
     float plotY = data[0];
     if (plotY < min) plotY = min;
     else if (plotY > max) plotY = max;
     float currentY = graphY + graph_height - (plotY - min)*graph_scale;
     text(data[0], graphX, currentY - margin_bottom*0.2);
     
-    stroke(plot_color_0);
+    stroke(plot_color);
     for(int i = 1; i < data_buffer; i++){
       float x1 = graphX + graph_step*i;
       float x2 = graphX + graph_step*(i-1);

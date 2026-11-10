@@ -2,17 +2,24 @@ import java.util.Arrays;
 import processing.serial.*;
 
 void setup() {
+  printLOGO();
+  println("\nUI Startup...");
   ui_mode = "STARTUP";
-  size(1920, 1000);
   
+  println("Initializing UI...");
+  size(1920, 1000);
   consolas = createFont("Consolas", 30, true);
-  //textFont(consolas);
+  arial = createFont("Arial", 30, true);
+  italic = createFont("Italic", 30, true);
+  sans_serif = createFont("SansSerif", 30, true);
   
   ui.initPlotCTR();
   ui.initPlotPQ();
   ui.initButtons();
+  println("UI initialization complete.");
   
-  //ui_mode = "STANDBY";
+  ui_mode = "STANDBY";
+  println("UI Standby");
 }
 
 void draw() {
@@ -21,7 +28,7 @@ void draw() {
   
   //force port chose at startup
   if(!ui.ready()){
-    ui_mode = "UI_MODE";
+    //ui_mode = "UI_MODE";
   }
   
   if(port_chosen && port_opened){
@@ -41,10 +48,10 @@ void draw() {
   }
   
   //ui
-      ui.updateButtons();
-      ui_mode = ui.checkPressed();
-      ui.updatePlotArray(new_frame);
-      ui.drawUILayout();
+  ui.updateButtons();
+  ui_mode = ui.checkPressed();
+  ui.updatePlotArray(new_frame);
+  ui.drawUILayout();
   switch(ui_mode){
     case("STANDBY"):
       ui.drawSTANDBYDisplay();
@@ -52,7 +59,7 @@ void draw() {
       
     case("UI_MODE"):
       ui.drawUIModeDisplay();
-      //break;
+      break;
       
     case("PORT"):
       ui.drawPORTDisplay();
@@ -62,13 +69,17 @@ void draw() {
         ui_mode = "ACTIVE";
       }
       break;
-      
+    
     case("CTR"):
       ui.drawCTRDisplay();
       break;
       
     case("PQ"):
       ui.drawPQDisplay();
+      break;
+      
+    case("CMD"):
+      ui.drawCMDDisplay();
       break;
       
     default:
