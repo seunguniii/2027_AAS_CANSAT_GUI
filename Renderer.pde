@@ -7,6 +7,10 @@ class Renderer{
   static final int TOP_RIM = 1;
   static final int FRONT = 2;
   static final int BACK = 3;
+  final color render_top_color = cyan;
+  final color render_front_color = magenta;
+  final color render_back_color = orange;
+  final color font_color = black;
   
   int[] edgeStyle;
   int[] vertexStyle;
@@ -18,6 +22,8 @@ class Renderer{
   boolean[] faceVisible;
   boolean[] edgeVisible;
   boolean[] vertexVisible;
+  
+  float roll; float pitch; float yaw;
   //Find edge connecting two vertices
   int findEdgeIndex(int a, int b){
     for(int i = 0; i < edges.length; i++){
@@ -166,12 +172,12 @@ class Renderer{
     line[10] = new Line(point[3], point[5]);
     line[11] = new Line(point[6], point[7]);
     
-    faces = new int[][]{{0, 1, 4, 2}, // +X: Front
-                        {3, 6, 7, 5}, // -X: Back
-                        {2, 4, 7, 6}, // +Y: Top
-                        {0, 3, 5, 1}, // -Y: Bottom
-                        {0, 2, 6, 3}, // +Z: Side
-                        {1, 5, 7, 4}};  // -Z: Opposite side
+    faces = new int[][]{{0, 1, 4, 2}, //+X: Front
+                        {3, 6, 7, 5}, //-X: Back
+                        {2, 4, 7, 6}, //+Y: Top
+                        {0, 3, 5, 1}, //-Y: Bottom
+                        {0, 2, 6, 3}, //+Z: Side
+                        {1, 5, 7, 4}};//-Z: Opposite side
     //color
     edgeStyle = new int[lineSize];
     vertexStyle = new int[pointSize];
@@ -345,12 +351,12 @@ class Renderer{
   void frameAttitude(String title){
     strokeWeight(stroke_weight);
     noFill();
-    stroke(ui_color);
+    stroke(ui.main_color);
     rect(graphX, graphY, graph_width, graph_height);
     
     textSize(label_size);
     fill(font_color);
-    text(title, graphX, graphY - margin_top*0.2);    
+    text(title, graphX, graphY - margin_top*0.2); 
   }
   
   void drawAxisGuide(){
@@ -369,7 +375,13 @@ class Renderer{
   }
   
   float viewDepth(Coordinate p){return p.x + p.y + p.z;}
-  void plotAttitude(float roll, float pitch, float yaw){
+  void plotAttitude(float roll, float pitch, float yaw, color plot_color_0){
+    this.roll = roll; this.pitch = pitch; this.yaw = yaw;
+    textSize(label_size);
+    fill(plot_color_0);
+    String data = "Roll : " + roll + "\nPitch : " + pitch + "\nYaw : " + yaw;
+    text(data, graphX + margin_left*0.3, graphY + margin_top*0.7); 
+    roll = radians(roll); pitch = radians(pitch); yaw = radians(yaw);
     strokeWeight(stroke_weight);
     drawAxisGuide();
     
@@ -461,10 +473,10 @@ class Renderer{
         int index = indices[i];
   
         Coordinate p = rotated[index];
-        PVector pp = projected[index];
+        //PVector pp = projected[index];
 
-        float sx = graphX + graph_width*0.5 + scale*pp.x;
-        float sy = graphY + graph_height*0.5 + scale*pp.y;
+        //float sx = graphX + graph_width*0.5 + scale*pp.x;
+        //float sy = graphY + graph_height*0.5 + scale*pp.y;
 
         int fillColor;
 
@@ -485,8 +497,8 @@ class Renderer{
         strokeWeight(stroke_weight);
         fill(fillColor);
 
-        float diameter = max(6, stroke_weight*2.5);
-        ellipse(sx, sy, diameter, diameter);
+        //float diameter = max(6, stroke_weight*2.5);
+        //ellipse(sx, sy, diameter, diameter);
       }
     }
   }

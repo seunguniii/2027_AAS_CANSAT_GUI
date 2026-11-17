@@ -19,9 +19,7 @@
 
 /******GS4******/
 //PQ's altitude, temp, bat volt, bat current, orientation, gps pos, solar panel volt's should be plotted in real time
-//STATUS: ing; altitude, temp, bat volt, bat current plottable
-//        TODO
-//        orientation(3d or plot?), gps pos(time v lon/lat or 2d?)
+//STATUS: done
 
 /******GS5******/
 //PQ's non-plotted telemetry should be displayed graphically/readable text

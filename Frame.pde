@@ -4,6 +4,19 @@ static class Frame{
   int[] payload;
   int crc;
   
+  static final int SYNC_0 = 0xAA;
+  static final int SYNC_1 = 0x55;
+
+  //all sizes in bytes
+  static final int FRAME_TYPE_SIZE = 1;
+  static final int MSG_HEADER_SIZE = 8;
+
+  static final int CRC_SIZE = 2;
+
+  static final int PQ_TELEMETRY_FRAME_SIZE = 141;
+  static final int CTR_TELEMETRY_FRAME_SIZE = 141;
+  static final int CMD_FRAME_SIZE = 100; //TODO
+  
   Telemetry.CTR ctrTelemetry;
   Telemetry.PQ pqTelemetry;
   
@@ -160,14 +173,21 @@ static class Frame{
         println("Mode = " + ctrTelemetry.mode);
         println("State = " + ctrTelemetry.state);
         println("Mechanism State = " + ctrTelemetry.mechState);
+        println("Task State = " + binary(ctrTelemetry.taskState, 6));
     
         println("Altitude = " + ctrTelemetry.altitude);
         println("Pressure = " + ctrTelemetry.pressure);
         println("Temperature = " + ctrTelemetry.temperature);
         println("BAT Voltage = " + ctrTelemetry.batteryVoltage);
         println("BAT Current = " + ctrTelemetry.batteryCurrent);
+        println("Attitude = (" + ctrTelemetry.attitude[0] + ", " + ctrTelemetry.attitude[1] + ", " + ctrTelemetry.attitude[2] + ")");
+        println("Rotation Rate = (" + ctrTelemetry.rotRate[0] + ", " + ctrTelemetry.rotRate[1] + ", " + ctrTelemetry.rotRate[2] + ")");
+        println("Acceleration = (" + ctrTelemetry.accel[0] + ", " + ctrTelemetry.accel[1] + ", " + ctrTelemetry.accel[2] + ")");
+        println("Sensor State = " + binary(ctrTelemetry.sensorState, 6));
     
-        println("Command Echo = " + ctrTelemetry.cmdEcho);
+        println("Command Rx = " + ctrTelemetry.cmdRx);
+        println("Cmd Rx Result = " + ctrTelemetry.rxResult);
+        println("Command Executed = " + ctrTelemetry.cmdExec);
     
         println("Telemetry CRC = " + hex(ctrTelemetry.crc, 4));
         break;

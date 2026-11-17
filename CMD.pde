@@ -30,4 +30,12 @@ static class CMD{
       return UNKNOWN;
     }
   }
+  
+  enum Verb{
+    //TODO
+  }
+  
+  enum Noun{
+    //TODO
+  }
 }

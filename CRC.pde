@@ -13,8 +13,8 @@ static class CRC16{
   }
   
   static boolean verify(int[] data, int offset, int length){    
-    int received = readUInt16LE(data, offset + length - CRC_SIZE);
-    int calculated = calculate(data, offset, length - CRC_SIZE);
+    int received = readUInt16LE(data, offset + length - Frame.CRC_SIZE);
+    int calculated = calculate(data, offset, length - Frame.CRC_SIZE);
     
     return received == calculated;
   }

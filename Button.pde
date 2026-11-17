@@ -21,7 +21,6 @@ class Button{
     this.rectHeight = (int)rectHeight;
     this.normColor = normColor;
     this.highlightColor = highlightColor;
-    //this.myColor = normColor;
     this.name = name;
     this.fontColor = fontColor;
   }
@@ -33,17 +32,16 @@ class Button{
   }
   
   color update(){
-    color myColor;
+    //if(!active)
+    //  return highlightColor;
     if(!mouseOver()) {
-      myColor = normColor;
       pressed = false;
-      return myColor;
+      return normColor;
     }
-    myColor = highlightColor;
     
     if(!mousePressed) pressed = false;
     else pressed = true;
-    return myColor;
+    return highlightColor;
   }
   
   void drawMe(){

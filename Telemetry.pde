@@ -8,6 +8,7 @@ static class Telemetry{
     FlightMode mode;
     CTR_OpState state;
     String mechState; //for hex representation TODO fall back to int if that's easier
+    int taskState;
     
     float altitude;
     float pressure;
@@ -15,10 +16,17 @@ static class Telemetry{
     float batteryVoltage;
     float batteryCurrent;
     
+    float[] attitude = new float[3];
     float[] rotRate = new float[3];
     float[] accel = new float[3];
     
-    CMD.CTR cmdEcho;
+    int sensorState;
+    
+    //TODO update to CMD formats
+    int cmdRx;
+    int rxResult;
+    int cmdExec;
+    
     int crc;
     
     CTR(){};
@@ -37,15 +45,25 @@ static class Telemetry{
       telemetry.mode = FlightMode.fromValue(payload[14] & 0xFF);
       telemetry.state = CTR_OpState.fromValue(payload[15] & 0xFF);
       telemetry.mechState = hex(payload[16] & 0xFF, 2);
+      telemetry.taskState = readUInt16LE(payload, 17); //TODO
       
-      telemetry.altitude = readFloatLE(payload, 17);
-      telemetry.pressure = readFloatLE(payload, 21);
-      telemetry.temperature = readFloatLE(payload, 25);
-      telemetry.batteryVoltage = readFloatLE(payload, 29);
-      telemetry.batteryCurrent = readFloatLE(payload, 33);
+      telemetry.altitude = readFloatLE(payload, 18);
+      telemetry.pressure = readFloatLE(payload, 22);
+      telemetry.temperature = readFloatLE(payload, 26);
+      telemetry.batteryVoltage = readFloatLE(payload, 30);
+      telemetry.batteryCurrent = readFloatLE(payload, 34);
+      for(int i = 0; i < 3; i++){
+        telemetry.attitude[i] = readFloatLE(payload, 38 + i*4);
+        telemetry.rotRate[i] = readFloatLE(payload, 50 + i*4);
+        telemetry.accel[i] = readFloatLE(payload, 62 + i*4);
+      }
+      telemetry.sensorState = readUInt16LE(payload, 74);
       
-      telemetry.cmdEcho = CMD.CTR.fromValue(payload[37] & 0xFF);
-      telemetry.crc = readUInt16LE(payload, 38);
+      telemetry.cmdRx = readUInt16LE(payload, 75); //TODO rewrite to read CMD structure
+      telemetry.rxResult = readUInt8LE(payload, 83);
+      telemetry.cmdExec = readUInt16LE(payload, 84); //TODO rewrite to read CMD structure
+      
+      telemetry.crc = readUInt16LE(payload, 126);
       
       return telemetry;      
     }
@@ -66,6 +84,7 @@ static class Telemetry{
     float batteryVoltage;
     float batteryCurrent;
     
+    float[] attitude = new float[3];
     float[] rotRate = new float[3];
     float[] accel = new float[3];
     float[] mag = new float[3];

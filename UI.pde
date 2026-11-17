@@ -1,54 +1,34 @@
 class UI{
-  //available ui modes
-  //STANDBY
-  //PORT
-  //CTR
-  //PQ
+  PApplet parent;
+  String mode;
+  final color font_color = black;
   
-  //Plots
-  //TODO move these to a plot class?
-  //CTR plots
-  Plot ctrPlotPressure = new Plot();
-  Plot ctrPlotTemperature = new Plot();
-  Plot ctrPlotAltitude = new Plot();
-  Plot ctrPlotBatVoltage = new Plot();
-  Plot ctrPlotBatCurrent = new Plot();
-  
-  Plot ctrPlotRotRateR = new Plot();
-  Plot ctrPlotRotRateP = new Plot();
-  Plot ctrPlotRotRateY = new Plot();
-  
-  Plot ctrPlotAccelX = new Plot();
-  Plot ctrPlotAccelY = new Plot();
-  Plot ctrPlotAccelZ = new Plot();
+  color plot_color_0 = dark_green;
+  color plot_color_1 = dark_blue;
+  color plot_color_2 = dark_red;
 
-  //PQ plots
-  Plot pqPlotPressure = new Plot();
-  Plot pqPlotTemperature = new Plot();
-  Plot pqPlotAltitude = new Plot();
-  Plot pqPlotBatVoltage = new Plot();
-  Plot pqPlotBatCurrent = new Plot();
-
-  Plot pqPlotRotRateR = new Plot();
-  Plot pqPlotRotRateP = new Plot();
-  Plot pqPlotRotRateY = new Plot();
-
-  Plot pqPlotAccelX = new Plot();
-  Plot pqPlotAccelY = new Plot();
-  Plot pqPlotAccelZ = new Plot();
-
-  Plot pqPlotMagFieldX = new Plot();
-  Plot pqPlotMagFieldY = new Plot();
-  Plot pqPlotMagFieldZ = new Plot();
+  color background_color = light_grey;
+  color button_normColor = black;
+  color button_highlightColor = grey;
+  color button_fontColor = white;
+  color main_color = black;
   
-  Plot pqPlotGNSSLon = new Plot();
-  Plot pqPlotGNSSLat = new Plot();
-  Plot pqPlotGNSSAlt = new Plot();
+  UiBundleCTR ctrBundle = new UiBundleCTR();
+  UiBundlePQ pqBundle = new UiBundlePQ();
+
+  Button button_active_mode_PORT;
+  Button button_active_mode_PLT_CTR;
+  Button button_active_mode_PLT_PQ;
+  Button button_active_mode_CMD;
+  Button button_active_mode_CONSOLE;
+  Button button_RESTART;
   
-  Plot pqPlotSP0 = new Plot();
-  Plot pqPlotSP1 = new Plot();
-  //gnss
-  //solar panel voltage
+  Button [] button_ports;
+  boolean button_ports_initialized = false;
+  UI(PApplet parent){
+    this.parent = parent;
+  }
+  Console console = new Console(parent);
   
   boolean ready(){
     return port_chosen; //TODO add future tests
@@ -56,267 +36,97 @@ class UI{
   
   void drawUILayout(){    
     strokeWeight(stroke_weight*2);
-    fill(ui_color); stroke(ui_color);
+    fill(main_color); stroke(main_color);
     line(width*0.13, 0, width*0.13, height);
   }
   
   void initButtons(){
     button_active_mode_PORT = new Button(width*0.01, height*0.01, width*0.11, height*0.06, button_normColor, button_highlightColor, "PORT", button_fontColor);
-    button_active_mode_CTR = new Button(width*0.01, height*0.08, width*0.11, height*0.06, button_normColor, button_highlightColor, "CTR", button_fontColor);
-    button_active_mode_PQ = new Button(width*0.01, height*0.15, width*0.11, height*0.06, button_normColor, button_highlightColor, "PQ", button_fontColor);
+    button_active_mode_PLT_CTR = new Button(width*0.01, height*0.08, width*0.11, height*0.06, button_normColor, button_highlightColor, "PLT CTR", button_fontColor);
+    button_active_mode_PLT_PQ = new Button(width*0.01, height*0.15, width*0.11, height*0.06, button_normColor, button_highlightColor, "PLT PQ", button_fontColor);
     button_active_mode_CMD = new Button(width*0.01, height*0.22, width*0.11, height*0.06, button_normColor, button_highlightColor, "CMD", button_fontColor);
+    button_active_mode_CONSOLE = new Button(width*0.01, height*0.29, width*0.11, height*0.06, button_normColor, button_highlightColor, "CONSOLE", button_fontColor);
     button_RESTART = new Button(width*0.01, height*0.92, width*0.11, height*0.06, red, pink, "RESTART", button_fontColor);
   }
   
+  void initPlots(){
+    ctrBundle.init();
+    pqBundle.init();
+  }
+  
+  
+  String checkPressed(){
+    String pressed = ui.mode;
+    if(button_active_mode_PORT.pressed) pressed = "PORT";
+    if(button_active_mode_PLT_CTR.pressed) pressed =  "CTR";
+    if(button_active_mode_PLT_PQ.pressed) pressed = "PQ";
+    if(button_active_mode_CMD.pressed) pressed =  "CMD";
+    if(button_active_mode_CONSOLE.pressed) pressed = "CONSOLE";
+
+    if(button_RESTART.pressed) restart();
+    
+    if(mode.equals(pressed)) return mode;
+    KEYBOARD_BUFFER = "";
+    return pressed;
+  }  
   void updateButtons(){
     button_active_mode_PORT.drawMe();
     button_RESTART.drawMe();
-    button_active_mode_CTR.drawMe();
-    button_active_mode_PQ.drawMe();
+    button_active_mode_PLT_CTR.drawMe();
+    button_active_mode_PLT_PQ.drawMe();
     button_active_mode_CMD.drawMe();
+    button_active_mode_CONSOLE.drawMe();
     
-    if(ui_mode == "PORT") button_active_mode_PORT.normColor = button_highlightColor;
+    if(mode == "PORT") button_active_mode_PORT.normColor = button_highlightColor;
     else button_active_mode_PORT.normColor = button_normColor;
     
-    if(ui_mode == "CTR") button_active_mode_CTR.normColor = button_highlightColor;
-    else button_active_mode_CTR.normColor = button_normColor;
+    if(mode == "CTR") button_active_mode_PLT_CTR.normColor = button_highlightColor;
+    else button_active_mode_PLT_CTR.normColor = button_normColor;
     
-    if(ui_mode == "PQ") button_active_mode_PQ.normColor = button_highlightColor;
-    else button_active_mode_PQ.normColor = button_normColor;   
+    if(mode == "PQ") button_active_mode_PLT_PQ.normColor = button_highlightColor;
+    else button_active_mode_PLT_PQ.normColor = button_normColor;   
     
-    if(ui_mode == "CMD") button_active_mode_CMD.normColor = button_highlightColor;
+    if(mode == "CMD") button_active_mode_CMD.normColor = button_highlightColor;
     else button_active_mode_CMD.normColor = button_normColor;
+    
+    if(mode == "CONSOLE") button_active_mode_CONSOLE.normColor = button_highlightColor;
+    else button_active_mode_CONSOLE.normColor = button_normColor;
+    mode = checkPressed();
+  }
+  
+  void updatePlots(Frame frame){
+    ctrBundle.update(frame);
+    pqBundle.update(frame);
   }
   
   void restart(){
     button_ports_initialized = false;
+    
     if(port_opened){
       port.clear();
       port.stop();
     }
     port_chosen = false;
     port_opened = false;
+    port_list = new String[0];
+    
     LOS_ctr = false;
     LOS_pq = false;
+    
     button_active_mode_PORT.active = true;
     button_active_mode_PORT.normColor = button_normColor;
+    
     buffer.clear();
-    //data_buffer.clear();
     
-    Arrays.fill(ctrPlotAltitude.data, 0);
+    console.CONSOLE_LINES = new String[console.MAX_CONSOLE_LINES];
+    KEYBOARD_BUFFER = "";
+    
+    //reset data buffer
   }
-  
-  String checkPressed(){
-    if(button_active_mode_PORT.pressed) return "PORT";
-    if(button_active_mode_CTR.pressed) return "CTR";
-    if(button_active_mode_PQ.pressed) return "PQ";
-    if(button_active_mode_CMD.pressed) return "CMD";
-    
-    if(button_RESTART.pressed) restart();
-    
-    return ui_mode;
-  }
-  
-  void updatePlotArray(Frame frame){
-    if(frame.ctrTelemetry != null && frame.type == Frame.Type.CTR_TELEMETRY){
-      ctrPlotAltitude.updateArray(new_frame.ctrTelemetry.altitude);
-      
-      ctrPlotTemperature.updateArray(new_frame.ctrTelemetry.temperature);
-      ctrPlotPressure.updateArray(new_frame.ctrTelemetry.pressure);
-      
-      ctrPlotBatVoltage.updateArray(new_frame.ctrTelemetry.batteryVoltage);
-      ctrPlotBatCurrent.updateArray(new_frame.ctrTelemetry.batteryCurrent);
-      
-      ctrPlotAccelX.updateArray(new_frame.ctrTelemetry.accel[0]);
-      ctrPlotAccelY.updateArray(new_frame.ctrTelemetry.accel[1]);
-      ctrPlotAccelZ.updateArray(new_frame.ctrTelemetry.accel[2]);
-      
-      ctrPlotRotRateR.updateArray(new_frame.ctrTelemetry.rotRate[0]);
-      ctrPlotRotRateP.updateArray(new_frame.ctrTelemetry.rotRate[1]);
-      ctrPlotRotRateY.updateArray(new_frame.ctrTelemetry.rotRate[2]);
-    }
-    
-    if(frame.pqTelemetry != null && frame.type == Frame.Type.PQ_TELEMETRY){
-      pqPlotAltitude.updateArray(new_frame.pqTelemetry.altitude);
-      
-      pqPlotTemperature.updateArray(new_frame.pqTelemetry.temperature);
-      pqPlotPressure.updateArray(new_frame.pqTelemetry.pressure);
-      
-      pqPlotBatVoltage.updateArray(new_frame.pqTelemetry.batteryVoltage);
-      pqPlotBatCurrent.updateArray(new_frame.pqTelemetry.batteryCurrent);
-      
-      pqPlotAccelX.updateArray(new_frame.pqTelemetry.accel[0]);
-      pqPlotAccelY.updateArray(new_frame.pqTelemetry.accel[1]);
-      pqPlotAccelZ.updateArray(new_frame.pqTelemetry.accel[2]);
-      
-      pqPlotRotRateR.updateArray(new_frame.pqTelemetry.rotRate[0]);
-      pqPlotRotRateP.updateArray(new_frame.pqTelemetry.rotRate[1]);
-      pqPlotRotRateY.updateArray(new_frame.pqTelemetry.rotRate[2]);
-      
-      pqPlotMagFieldX.updateArray(new_frame.pqTelemetry.mag[0]);
-      pqPlotMagFieldY.updateArray(new_frame.pqTelemetry.mag[1]);
-      pqPlotMagFieldZ.updateArray(new_frame.pqTelemetry.mag[2]);
-      
-      pqPlotSP0.updateArray(new_frame.pqTelemetry.solar0);
-      pqPlotSP1.updateArray(new_frame.pqTelemetry.solar1);
-    }
-  }
-  
-  //CTR
-  void initPlotCTR(){
-    float [] margin_scale = {0.01, 0.01, 0.03, 0.03}; //left right top bottom
-  
-    //right column
-    float [] graph_size = {(width - 10)*0.2, (height - 10)*0.333};
-    float [] graph_XY_alt = {margin_scale[0]*width + 0.8*width, margin_scale[3]*height};
-    float [] graph_XY_C = {margin_scale[0]*width + 0.8*width, margin_scale[3]*height + 0.333*height};
-    float [] graph_XY_p = {margin_scale[0]*width + 0.8*width, margin_scale[3]*height + 0.666*height};
-    ctrPlotAltitude.init(margin_scale, graph_XY_alt, graph_size, 0, 200);
-    ctrPlotTemperature.init(margin_scale, graph_XY_C, graph_size, 20, 30);
-    ctrPlotPressure.init(margin_scale, graph_XY_p, graph_size, 100000, 110000);
-  
-    //left column
-    float [] graph_XY_bv = {margin_scale[0]*width + 0.6*width, margin_scale[3]*height};
-    float [] graph_XY_bc = {margin_scale[0]*width + 0.6*width, margin_scale[3]*height + 0.333*height};
-    float [] graph_XY_acc = {margin_scale[0]*width + 0.6*width, margin_scale[3]*height + 0.666*height};
-    ctrPlotBatVoltage.init(margin_scale, graph_XY_bv, graph_size, 0, 5);
-    ctrPlotBatCurrent.init(margin_scale, graph_XY_bc, graph_size, 0, 3);
-    ctrPlotAccelX.init(margin_scale, graph_XY_acc, graph_size, 0, 90);
-    ctrPlotAccelY.init(margin_scale, graph_XY_acc, graph_size, 0, 90);
-    ctrPlotAccelZ.init(margin_scale, graph_XY_acc, graph_size, 0, 90);
-   
-    //4th column from the right
-    float [] graph_size_large = {(width - 10)*0.25, (height - 10)*0.5};
-    float [] graph_XY_att = {margin_scale[0]*width + 0.15*width, margin_scale[3]*height};
-    
-    ctrRenderer.initCTR(120, 20, 2.75, 5);
-    ctrRenderer.initPlot(margin_scale, graph_XY_att, graph_size_large);
-  }
-  
-  void plotCTR(){
-    textFont(sans_serif);
-    ctrPlotAltitude.plotFrame("Altitude [m]");
-    ctrPlotAltitude.plot(plot_color_0);
-    
-    ctrPlotTemperature.plotFrame("Temperature [C]");
-    ctrPlotTemperature.plot(plot_color_0);
-    ctrPlotPressure.plotFrame("Pressure [Pa]");
-    ctrPlotPressure.plot(plot_color_0);
-    
-    ctrPlotBatVoltage.plotFrame("Bat. Voltage [V]");
-    ctrPlotBatVoltage.plot(plot_color_0);
-    ctrPlotBatCurrent.plotFrame("Bat. Current [A]");
-    ctrPlotBatCurrent.plot(plot_color_0);
-    
-    ctrPlotAccelX.plotFrame("Acceration [m/s2]");
-    ctrPlotAccelX.plot(plot_color_0);
-    ctrPlotAccelY.plot(plot_color_1);
-    ctrPlotAccelZ.plot(plot_color_2);
-    
-    plotAttitudeCTR();
-  }
-  
-  float roll = 0; float pitch = 0; float yaw = 0;
-  void plotAttitudeCTR(){
-    //float roll = ctrPlotRotRateR.data[data_buffer - 1];
-    //float pitch = ctrPlotRotRateP.data[data_buffer - 1];
-    //float yaw = ctrPlotRotRateY.data[data_buffer - 1];
-    roll += 0.01; pitch += 0.01; yaw += 0.01;
-    ctrRenderer.frameAttitude("Attitude");
-    ctrRenderer.plotAttitude(roll, pitch, yaw);
-  }
-  
-  //PQ
-  void initPlotPQ(){
-    float [] margin_scale = {0.01, 0.01, 0.03, 0.03}; //left right top bottom
-  
-    float [] graph_size = {(width - 10)*0.2, (height - 10)*0.333};
-    
-    //1st column from the right  
-    float [] graph_XY_alt = {margin_scale[0]*width + 0.8*width, margin_scale[3]*height};
-    float [] graph_XY_C = {margin_scale[0]*width + 0.8*width, margin_scale[3]*height + 0.333*height};
-    float [] graph_XY_p = {margin_scale[0]*width + 0.8*width, margin_scale[3]*height + 0.666*height};
-    pqPlotAltitude.init(margin_scale, graph_XY_alt, graph_size, 0, 200);
-    pqPlotTemperature.init(margin_scale, graph_XY_C, graph_size, 10, 27);
-    pqPlotPressure.init(margin_scale, graph_XY_p, graph_size, 100200, 110000);
-  
-    //2nd column from the right
-    float [] graph_XY_bv = {margin_scale[0]*width + 0.6*width, margin_scale[3]*height};
-    float [] graph_XY_bc = {margin_scale[0]*width + 0.6*width, margin_scale[3]*height + 0.333*height};
-    float [] graph_XY_acc = {margin_scale[0]*width + 0.6*width, margin_scale[3]*height + 0.666*height};
-    pqPlotBatVoltage.init(margin_scale, graph_XY_bv, graph_size, 0, 5);
-    pqPlotBatCurrent.init(margin_scale, graph_XY_bc, graph_size, 0, 3);
-    
-    pqPlotAccelX.init(margin_scale, graph_XY_acc, graph_size, 0, 90);
-    pqPlotAccelY.init(margin_scale, graph_XY_acc, graph_size, 0, 90);
-    pqPlotAccelZ.init(margin_scale, graph_XY_acc, graph_size, 0, 90);
-    
-    //3rd column from the right
-    float [] graph_XY_sp0 = {margin_scale[0]*width + 0.4*width, margin_scale[3]*height};
-    float [] graph_XY_sp1 = {margin_scale[0]*width + 0.4*width, margin_scale[3]*height + 0.333*height};
-    float [] graph_XY_mag = {margin_scale[0]*width + 0.4*width, margin_scale[3]*height + 0.666*height};
-    pqPlotSP0.init(margin_scale, graph_XY_sp0, graph_size, 0, 5);
-    pqPlotSP1.init(margin_scale, graph_XY_sp1, graph_size, 0, 5);
-    
-    pqPlotMagFieldX.init(margin_scale, graph_XY_mag, graph_size, 0, 90);
-    pqPlotMagFieldY.init(margin_scale, graph_XY_mag, graph_size, 0, 90);
-    pqPlotMagFieldZ.init(margin_scale, graph_XY_mag, graph_size, 0, 90);
-    
-    //4th column from the right
-    float [] graph_size_large = {(width - 10)*0.25, (height - 10)*0.5};
-    float [] graph_XY_att = {margin_scale[0]*width + 0.15*width, margin_scale[3]*height};
-    //float [] graph_XY_GNSS = {margin_scale[0]*width + 0.15*width, margin_scale[3]*height + 0.5*height};
-    
-    pqRenderer.initPQ(8, 12, 1.4);
-    pqRenderer.initPlot(margin_scale, graph_XY_att, graph_size_large);
-  }
-  
-  void plotPQ(){
-    textFont(sans_serif);
-    pqPlotAltitude.plotFrame("Altitude [m]");
-    pqPlotAltitude.plot(plot_color_0);
-    
-    pqPlotTemperature.plotFrame("Temperature [C]");
-    pqPlotTemperature.plot(plot_color_0);
-    pqPlotPressure.plotFrame("Pressure [Pa]");
-    pqPlotPressure.plot(plot_color_0);
-    
-    pqPlotBatVoltage.plotFrame("Bat. Voltage [V]");
-    pqPlotBatVoltage.plot(plot_color_0);
-    pqPlotBatCurrent.plotFrame("Bat. Current [A]");
-    pqPlotBatCurrent.plot(plot_color_0);
-    
-    pqPlotAccelX.plotFrame("Acceration [m/s2]");
-    pqPlotAccelX.plot(plot_color_0);
-    pqPlotAccelY.plot(plot_color_1);
-    pqPlotAccelZ.plot(plot_color_2);
-    
-    pqPlotSP0.plotFrame("SP0 Volatge [V]");
-    pqPlotSP0.plot(plot_color_0);
-    
-    pqPlotSP1.plotFrame("SP1 Volatge [V]");
-    pqPlotSP1.plot(plot_color_0);
-    
-    pqPlotMagFieldX.plotFrame("Mag. Field [G]");
-    pqPlotMagFieldX.plot(plot_color_0);
-    pqPlotMagFieldZ.plot(plot_color_1);
-    pqPlotMagFieldY.plot(plot_color_2);
-    
-    plotAttitudePQ();
-  }
-  
-  void plotAttitudePQ(){
-    //float roll = ctrPlotRotRateR.data[data_buffer - 1];
-    //float pitch = ctrPlotRotRateP.data[data_buffer - 1];
-    //float yaw = ctrPlotRotRateY.data[data_buffer - 1];
-    roll += 0.01; pitch += 0.01; yaw += 0.01;
-    pqRenderer.frameAttitude("Attitude");
-    pqRenderer.plotAttitude(roll, pitch, yaw);
-  }
-  
   
   void drawLOS(boolean LOS){
-    if(LOS){
+    boolean draw = (millis() / 500) % 2 == 0;
+    if(LOS && draw){
       strokeWeight(stroke_weight*8);
       fill(white); stroke(red);
       rect(width*0.2, height*0.2, width*0.6, height*0.6);
@@ -337,17 +147,29 @@ class UI{
     text(LOGO6, width*0.25, height*0.58);
   }
   
-  void drawUIModeDisplay(){
-    //button_
+  void drawCMDDisplay(){
+    return; //TODO
   }
   
-  void drawCMDDisplay(){
-    
+  void drawConsoleDisplay(){
+    String cursor = (millis() / 500) % 2 == 0 ? "_" : "";
+    float marginx = width*0.005; float marginy = height*0.01;
+    stroke(white); strokeWeight(7);
+    fill(black); rect(width*0.15, height*0.1, width*0.83, height*0.875 + marginy);
+    textFont(arial); fill(font_color); textSize(height*0.07);
+    text("Console", width*0.15, height*0.07);
+    textFont(consolas); fill(console.font_color); textSize(height*0.025);
+    text(console.CONSOLE_TAG + KEYBOARD_BUFFER + cursor, width*0.15 + marginx, height*0.95);
+    float lineHeight = height*0.025;
+    for (int i = console.MAX_CONSOLE_LINES - 1; i >= 0; i--) {
+      try{text(console.CONSOLE_LINES[console.MAX_CONSOLE_LINES - 1-i], width*0.15+marginx, 0.95*height - (i+1)*lineHeight);}
+      catch(RuntimeException e){}
+    }
   }
   
   void drawPORTDisplay(){
-    textFont(sans_serif);
-    String [] port_list = Serial.list();
+    textFont(arial);
+    port_list = Serial.list();
     if(port_list.length == 0){
       fill(red); textSize(height*0.05);
       text("No port found", width*0.15, height*0.15);
@@ -366,7 +188,6 @@ class UI{
       button_ports[i].drawMe();
       if(button_ports[i].pressed){
         port_name = port_list[i];
-        button_active_mode_PORT.normColor = button_active_mode_PORT.highlightColor;
         button_active_mode_PORT.active = false;
         port_chosen = true;
       }
@@ -374,12 +195,12 @@ class UI{
   }
   
   void drawCTRDisplay(){
-    plotCTR();
+    ctrBundle.plot(plot_color_0, plot_color_1, plot_color_2);
     drawLOS(LOS_ctr);
   }
   
   void drawPQDisplay(){
-    plotPQ();
+    pqBundle.plot(plot_color_0, plot_color_1, plot_color_2);
     drawLOS(LOS_pq);
   }
 }

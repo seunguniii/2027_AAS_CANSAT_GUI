@@ -5,7 +5,10 @@ class Plot{
   float margin_top; float margin_bottom;
   float graphX; float graphY;
   float graph_width; float graph_height;
+  static final int data_buffer = 1000;
   float [] data = new float[data_buffer];
+  
+  final color font_color = black;
   
   float label_size;
   
@@ -45,7 +48,7 @@ class Plot{
   void plotFrame(String title){
     strokeWeight(stroke_weight);
     noFill();
-    stroke(ui_color);
+    stroke(ui.main_color);
     rect(graphX, graphY, graph_width, graph_height);
     
     textSize(label_size);
