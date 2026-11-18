@@ -7,7 +7,7 @@ static class Telemetry{
     
     FlightMode mode;
     CTR_OpState state;
-    String mechState; //for hex representation TODO fall back to int if that's easier
+    int mechState;
     int taskState;
     
     float altitude;
@@ -22,10 +22,9 @@ static class Telemetry{
     
     int sensorState;
     
-    //TODO update to CMD formats
-    int cmdRx;
+    CMD.ACK cmdRx = new CMD.ACK(CMD.Verb.UNKNOWN, CMD.Noun.UNKNOWN, 0);
     int rxResult;
-    int cmdExec;
+    CMD.ACK cmdExec = new CMD.ACK(CMD.Verb.UNKNOWN, CMD.Noun.UNKNOWN, 0);
     
     int crc;
     
@@ -44,7 +43,7 @@ static class Telemetry{
       
       telemetry.mode = FlightMode.fromValue(payload[14] & 0xFF);
       telemetry.state = CTR_OpState.fromValue(payload[15] & 0xFF);
-      telemetry.mechState = hex(payload[16] & 0xFF, 2);
+      telemetry.mechState = payload[16];
       telemetry.taskState = readUInt16LE(payload, 17); //TODO
       
       telemetry.altitude = readFloatLE(payload, 18);
@@ -59,9 +58,9 @@ static class Telemetry{
       }
       telemetry.sensorState = readUInt16LE(payload, 74);
       
-      telemetry.cmdRx = readUInt16LE(payload, 75); //TODO rewrite to read CMD structure
+      //telemetry.cmdRx = readUInt16LE(payload, 75); //TODO rewrite to read CMD structure
       telemetry.rxResult = readUInt8LE(payload, 83);
-      telemetry.cmdExec = readUInt16LE(payload, 84); //TODO rewrite to read CMD structure
+      //telemetry.cmdExec = readUInt16LE(payload, 84); //TODO rewrite to read CMD structure
       
       telemetry.crc = readUInt16LE(payload, 126);
       
@@ -76,7 +75,7 @@ static class Telemetry{
     int commandCount;
     
     FlightMode mode;
-    String mechState; //for hex representation TODO fall back to int if that's easier
+    int mechState;
     
     float altitude;
     float pressure;
@@ -96,9 +95,9 @@ static class Telemetry{
     float solar0;
     float solar1;
     
-    CMD.PQ cmdEcho;
-    CMD.PQ imageStabilization;
-    CMD.PQ scienceExp;
+    int cmdEcho;
+    int imageStabilization;
+    int scienceExp;
     
     int crc;
     
@@ -116,7 +115,7 @@ static class Telemetry{
       telemetry.commandCount = readUInt16LE(payload, 12);
       
       telemetry.mode = FlightMode.fromValue(payload[14] & 0xFF);
-      telemetry.mechState = hex(payload[16] & 0xFF, 4);
+      telemetry.mechState = payload[16];
       
       telemetry.altitude = readFloatLE(payload, 16);
       telemetry.pressure = readFloatLE(payload, 20);
@@ -137,9 +136,9 @@ static class Telemetry{
       telemetry.solar0 = readFloatLE(payload, 89);
       telemetry.solar1 = readFloatLE(payload, 93);
       
-      telemetry.cmdEcho = CMD.PQ.fromValue(payload[97] & 0xFF);
-      telemetry.imageStabilization = CMD.PQ.fromValue(payload[98] & 0xFF);
-      telemetry.scienceExp = CMD.PQ.fromValue(payload[99] & 0xFF);
+      telemetry.cmdEcho = readUInt16LE(payload, 97);
+      telemetry.imageStabilization = readUInt16LE(payload, 98);
+      telemetry.scienceExp = readUInt16LE(payload, 99);
       
       telemetry.crc = readUInt16LE(payload, 100);
       

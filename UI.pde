@@ -22,16 +22,17 @@ class UI{
   Button button_active_mode_CMD;
   Button button_active_mode_CONSOLE;
   Button button_RESTART;
+  Console console;
   
   Button [] button_ports;
   boolean button_ports_initialized = false;
   UI(PApplet parent){
     this.parent = parent;
+    console = new Console(parent);
   }
-  Console console = new Console(parent);
   
   boolean ready(){
-    return port_chosen; //TODO add future tests
+    return port_opened; //TODO add future tests
   }
   
   void drawUILayout(){    
@@ -121,7 +122,7 @@ class UI{
     console.CONSOLE_LINES = new String[console.MAX_CONSOLE_LINES];
     KEYBOARD_BUFFER = "";
     
-    //reset data buffer
+    //reset data buffer & serial readings <- serial reading how?
   }
   
   void drawLOS(boolean LOS){

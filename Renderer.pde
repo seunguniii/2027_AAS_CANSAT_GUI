@@ -72,7 +72,6 @@ class Renderer{
   
   //Update visibility after rotation
   void updateVisibility(Coordinate[] rotated){
-  
     //Reset vertex visibility
     for(int i = 0; i < vertexVisible.length; i++){
       vertexVisible[i] = false;
@@ -473,11 +472,6 @@ class Renderer{
         int index = indices[i];
   
         Coordinate p = rotated[index];
-        //PVector pp = projected[index];
-
-        //float sx = graphX + graph_width*0.5 + scale*pp.x;
-        //float sy = graphY + graph_height*0.5 + scale*pp.y;
-
         int fillColor;
 
         switch(vertexStyle[index]){
@@ -496,13 +490,10 @@ class Renderer{
         stroke(fillColor);
         strokeWeight(stroke_weight);
         fill(fillColor);
-
-        //float diameter = max(6, stroke_weight*2.5);
-        //ellipse(sx, sy, diameter, diameter);
-      }
-    }
-  }
-}
+      }//indices & vertices
+    }//for
+  }//view depth
+}//class renderer
 
 class Coordinate{
   float x;

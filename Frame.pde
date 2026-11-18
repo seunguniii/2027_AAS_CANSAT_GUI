@@ -1,4 +1,6 @@
 static class Frame{
+  static int[] rawFrame;
+  
   Type type;
   MsgHeader header;
   int[] payload;
@@ -13,9 +15,7 @@ static class Frame{
 
   static final int CRC_SIZE = 2;
 
-  static final int PQ_TELEMETRY_FRAME_SIZE = 141;
-  static final int CTR_TELEMETRY_FRAME_SIZE = 141;
-  static final int CMD_FRAME_SIZE = 100; //TODO
+  static final int PACKET_SIZE = 141;
   
   Telemetry.CTR ctrTelemetry;
   Telemetry.PQ pqTelemetry;
@@ -23,10 +23,10 @@ static class Frame{
   Frame(){};
   
   enum Type{
-    CTR_TELEMETRY(0, CTR_TELEMETRY_FRAME_SIZE),
-    PQ_TELEMETRY(1, PQ_TELEMETRY_FRAME_SIZE),
+    CTR_TELEMETRY(0, PACKET_SIZE),
+    PQ_TELEMETRY(1, PACKET_SIZE),
     
-    CMD(2, CMD_FRAME_SIZE),
+    CMD(2, PACKET_SIZE),
     
     UNKNOWN(-1, 0);
   
@@ -41,7 +41,7 @@ static class Frame{
     
     static Type fromValue(int value){
       for(Type type: values()){
-        if(type.value == value) return type;
+        if(type.value == value) return type;  
       }
       return UNKNOWN;
     }
@@ -49,8 +49,21 @@ static class Frame{
     int getSize(){
       return size;
     }
-  }
+  }//enum
   
+  void receiveTelemetry(Frame frame) {
+    switch(frame.type) {
+      case CTR_TELEMETRY:
+        latest_ctr_frame = frame;
+        break;
+      case PQ_TELEMETRY:
+        latest_pq_frame = frame;
+        break;
+
+      default:
+        return;
+    }
+  }
   
   static Frame parseFrame(ArrayList<Integer> buffer){
     Frame frame = new Frame();
@@ -73,6 +86,7 @@ static class Frame{
       if(buffer.size() < frame_size) break;
       int[] packet = new int[frame_size];
       for(int i = 0; i < frame_size; i++){packet[i] = buffer.get(i);}
+      rawFrame = packet.clone();
       for(int i = 0; i < frame_size; i++){buffer.remove(0);}
     
       frame.parseHeader(packet);
@@ -172,7 +186,7 @@ static class Frame{
     
         println("Mode = " + ctrTelemetry.mode);
         println("State = " + ctrTelemetry.state);
-        println("Mechanism State = " + ctrTelemetry.mechState);
+        println("Mechanism State = " + hex(ctrTelemetry.mechState & 0xFF, 4));
         println("Task State = " + binary(ctrTelemetry.taskState, 6));
     
         println("Altitude = " + ctrTelemetry.altitude);
@@ -199,7 +213,7 @@ static class Frame{
         println("Command Count = " + pqTelemetry.commandCount);
     
         println("Mode = " + pqTelemetry.mode);
-        println("Mechanism State = " + pqTelemetry.mechState);
+        println("Mechanism State = " + hex(pqTelemetry.mechState & 0xFF, 4));
     
         println("Altitude = " + pqTelemetry.altitude);
         println("Pressure = " + pqTelemetry.pressure);

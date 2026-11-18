@@ -52,15 +52,15 @@ class UiBundleCTR{
     float [] graph_XY_bv = {margin_scale[0]*width + 0.6*width, margin_scale[3]*height};
     float [] graph_XY_bc = {margin_scale[0]*width + 0.6*width, margin_scale[3]*height + 0.333*height};
     float [] graph_XY_acc = {margin_scale[0]*width + 0.6*width, margin_scale[3]*height + 0.666*height};
-    ctrPlotBatVoltage.init(margin_scale, graph_XY_bv, graph_size, 0, 5);
-    ctrPlotBatCurrent.init(margin_scale, graph_XY_bc, graph_size, 0, 3);
+    ctrPlotBatVoltage.init(margin_scale, graph_XY_bv, graph_size, 0, 10);
+    ctrPlotBatCurrent.init(margin_scale, graph_XY_bc, graph_size, 0, 10);
     ctrPlotAccel.init(margin_scale, graph_XY_acc, graph_size, -1, 1);
    
     //4th column from the right
     float [] graph_size_large = {(width - 10)*0.25, (height - 10)*0.5};
     float [] graph_XY_att = {margin_scale[0]*width + 0.15*width, margin_scale[3]*height};
     
-    ctrRenderer.initCTR(120, 20, 2.75, 5);
+    ctrRenderer.initCTR(60, 60, 2.75, 5);
     ctrRenderer.initPlot(margin_scale, graph_XY_att, graph_size_large);
   }
   
@@ -84,7 +84,7 @@ class UiBundleCTR{
     
     ctrPlotBatVoltage.plotFrame("Bat. Voltage [V]");
     ctrPlotBatVoltage.plot(plot_color_0);
-    ctrPlotBatCurrent.plotFrame("Bat. Current [A]");
+    ctrPlotBatCurrent.plotFrame("Bat. Current [mA]");
     ctrPlotBatCurrent.plot(plot_color_0);
     
     ctrPlotAccel.plotFrame("Acceleration [m/s2]");

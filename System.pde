@@ -25,25 +25,36 @@ static class MCU{
       }
       return UNKNOWN;
     }
+    
+    static Type fromName(String name){
+      switch(name){
+        case("PQ"):  return PQ;
+        case("CTR"): return CTR;
+        case("GS"): return GS;
+        
+        case("TEST"): return TEST;
+        case("ESP0"): return ESP0;
+        case("ESP1"): return ESP1;
+        case("ESP_CAM_0"): return ESP_CAM_0;
+        case("ESP_CAM_1"): return ESP_CAM_1;
+        
+        default: return UNKNOWN;
+      }
+    }
   }
 }
 
 
 static class Node{
   enum Type{
-    IMU(50),
-    BAROMETER(51),
-    POWER_MONITOR(52),
-    MAGNETOMETER(53),
-    GNSS(54),
+    SUPER(0),
     
-    MAIN(0),
-    TELEMETRY(1),
+    TELEM(11),
+    SENSOR(12),
+    CMD_RELAY(13),
+    MECH(14),
     
-    HEADER_TEST(200),
-    MSG_LOCAL_NODE0_TEST(201),
-    MSG_LOCAL_NODE1_TEST(202),
-    MSG_ESPNOW_TEST(203),
+    LOGGER(20),
     
     UNKNOWN(-1);
     
@@ -58,6 +69,21 @@ static class Node{
         if(type.value == value) return type;
       }
       return UNKNOWN;
+    }
+    
+    static Type fromName(String name){
+      switch(name){
+        case("SUPER"): return SUPER;
+        
+        case("TELEM"): return TELEM;
+        case("SENSOR"): return SENSOR;
+        case("CMD_RELAY"): return CMD_RELAY;
+        case("MECH"): return MECH;
+        
+        case("LOGGER"): return LOGGER;
+        
+        default: return UNKNOWN;
+      }
     }
   }
 }

@@ -22,7 +22,7 @@ void setup() {
   ui.mode = "STANDBY";
   println("UI Standby");
 }
-int k = 0;
+
 void draw() {
   background(ui.background_color);
   current_time = millis();
@@ -35,7 +35,6 @@ void draw() {
   if(port_chosen && port_opened){
     //parse packet
     while (port.available() > 0) {buffer.add(port.read());}
-  
     Frame parsed_frame = Frame.parseFrame(buffer);
     if(parsed_frame != null && parsed_frame.ctrTelemetry != null)
       new_frame = parsed_frame;
@@ -50,7 +49,6 @@ void draw() {
   
   //ui
   ui.updateButtons();
-  //ui_mode = ui.checkPressed();
   ui.updatePlots(new_frame);
   ui.drawUILayout();
   switch(ui.mode){
@@ -62,7 +60,7 @@ void draw() {
       ui.drawPORTDisplay();
       if(port_chosen && !port_opened){
         try{
-          port = new Serial(this, port_name, 9600);
+          port = new Serial(this, port_name, 115200);
           port_opened = true;
           ui.mode = "STANDBY";
         }

@@ -8,6 +8,14 @@ String [] port_list = Serial.list();
 static ArrayList<Integer> buffer = new ArrayList<Integer>();  
 static int frame_size;
 
+static Frame latest_ctr_frame = null;
+static Frame latest_pq_frame = null;
+
+boolean telem_streaming = false;
+
+String telem_stream_source = "";
+String telem_stream_format = "";
+
 //received counters
 static int count_gs_telem_ctr = 0;
 static int count_gs_telem_pq = 0;
@@ -42,8 +50,8 @@ String KEYBOARD_BUFFER = "";
 String KEYBOARD_INPUT = "";
 
 UI ui;
-//Console console;
 Frame new_frame;
+Frame cmd_frame;
 
 PFont consolas;
 PFont arial;
